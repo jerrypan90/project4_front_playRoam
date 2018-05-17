@@ -1,15 +1,11 @@
 import React, {Component} from 'react';
 
 class Signin extends Component {
-  constructor() {
-    super();
-  }
-
   render(){
     return(
       <div>
         <h2>Sign In</h2>
-        <form onSubmit={this.props.handleSubmit}>
+        <form onSubmit={this.props.handleSignIn}>
           <div>
             <input type="email" ref="email" placeholder="Email" />
             < br />
