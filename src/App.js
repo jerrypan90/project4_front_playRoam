@@ -115,7 +115,6 @@ class App extends Component {
           <div>
             {isLoggedIn ? (
               <div>
-                {/* <Activity userInfo={this.state.userInfo} isLoggedIn={this.state.isLoggedIn} /> */}
                 <Activity {...this.state} handleUpdateActivity={this.handleUpdateActivity} />
                 <button onClick={this.handleLogout}>Logout</button>
               </div>
@@ -137,7 +136,8 @@ class App extends Component {
             </Modal>
 
             {/* <Route exact path='/activity' component={Activity} /> */}
-            <Activitylist {...this.state} getActivty={this.getActivty} stopUpdateActivity={this.stopUpdateActivity} />
+            {/* <Activitylist {...this.state} stopUpdateActivity={this.stopUpdateActivity} /> */}
+            <Activitylist isLoggedIn={this.state.isLoggedIn} user_id={this.state.user_id} username={this.state.username} updateActivity={this.state.updateActivity} stopUpdateActivity={this.stopUpdateActivity} />
           </div>
         </Router>
       </div>

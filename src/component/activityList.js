@@ -9,6 +9,10 @@ class List extends Component {
         <p>Date: {this.props.date}</p>
         <p>Venue: {this.props.venue}</p>
         <p>From: {this.props.startTime} to {this.props.endTime}</p>
+        {this.props.isLoggedIn
+        ? <button className={`creator${this.props.creator}`} onClick={this.props.joinHandler} value={this.props.id}>Join</button>
+        : null
+        }
       </div>
     );
   }
@@ -17,8 +21,11 @@ class List extends Component {
 class Activitylist extends Component {
   constructor(props){
     super(props);
-    //console.log('props from activityList.js', props);
+    this.joinHandler = this.joinHandler.bind(this);
     this.state = {
+      isLoggedIn: false,
+      username: '',
+      user_id: '',
       activityInfo: []
     }
   }
@@ -26,15 +33,36 @@ class Activitylist extends Component {
   componentDidMount(){
     //console.log('CDM in activityList.js');
     //console.log(this.props.updateActivity);
+    this.getActivity();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log('CWRP in AL', nextProps.updateActivity);
+    this.setState({
+      isLoggedIn: nextProps.isLoggedIn,
+      username: nextProps.username,
+      user_id: nextProps.user_id
+    })
     this.getActivity()
   }
 
   componentDidUpdate(){
     if(this.props.updateActivity){
       //console.log('CDU in activityList.js');
-      this.getActivity();
-      this.props.stopUpdateActivity();
-    }
+      this.getActivity()
+      this.props.stopUpdateActivity()
+    };
+  }
+
+  joinHandler(e){
+    axios.post('http://localhost:5000/rsvps', {
+      user_id: this.props.user_id,
+      activity_id: e.target.value,
+      attendance: 'true'
+    })
+    .catch((err) => {
+      console.log('Error in Joining Activity: ', err.response);
+    });
   }
 
   getActivity(){
@@ -45,12 +73,15 @@ class Activitylist extends Component {
         activityInfo: res.data.map((obj) => {
           return <List
             key={obj.id}
+            id={obj.id}
+            creator={obj.user_id}
             title={obj.title}
             date={obj.date}
             startTime={obj.start_time}
             endTime={obj.end_time}
             venue={obj.venue}
-          ></List>;
+            joinHandler={this.joinHandler}
+            isLoggedIn={this.state.isLoggedIn} />;
         })
       })
       //console.log('this.state.ai from AL', this.state.activityInfo);

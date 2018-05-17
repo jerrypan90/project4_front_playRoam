@@ -9,32 +9,16 @@ import '../style.css';
 class Activity extends Component {
   constructor(props) {
     super(props);
-    //console.log('props from activity.js', props);
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.createActivity = this.createActivity.bind(this);
     this.state = {
       showModal: false,
-      user_id: this.props.user_id
+      isLoggedIn: false,
+      username: '',
+      user_id: ''
     };
   }
-
-  // componentDidMount() {
-  //   console.log('CDM in activity.js');
-  //   if(this.props.isLoggedIn) {
-  //     this.getUserInfo()
-  //   }
-  // }
-
-  // getUserInfo(){
-  //   console.log('get user info from activity.js');
-  //   // let result = jwtDecode(this.props.userInfo);
-  //   // this.setState({username: result.username, user_id: result.id});
-  //   this.setState({
-  //     username: this.props.username,
-  //     user_id: this.props.user_id
-  //   })
-  // }
 
   handleOpenModal() {
     this.setState({ showModal: true });
@@ -80,7 +64,7 @@ class Activity extends Component {
         overlayClassName='overlay'
       >
         <p className='cross' onClick={this.handleCloseModal}>X</p>
-        <Activityform user_id={this.state.user_id} createActivity={this.createActivity} />
+        <Activityform user_id={this.props.user_id} createActivity={this.createActivity} />
       </Modal>
 
       </div>
