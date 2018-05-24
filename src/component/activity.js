@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
+import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 import axios from 'axios';
 
 import Activityform from './activityForm';
@@ -53,9 +54,10 @@ class Activity extends Component {
 
   render() {
     return (
-      <div>
-        <h3>Hello {this.props.username}</h3>
-        <button onClick={this.handleOpenModal}>Create</button>
+      <div className='activityDiv'>
+        <h3 className='hello'>Hello {this.props.username}</h3>
+        {/* <button className='create'><Link to='/view'>View</Link></button> */}
+        <button className='create' onClick={this.handleOpenModal}>Create</button>
 
       <Modal
         isOpen={this.state.showModal}

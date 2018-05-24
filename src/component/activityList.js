@@ -1,18 +1,23 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 
+import '../style.css';
+
 class List extends Component {
   render() {
+    let isLoggedIn = this.props.isLoggedIn;
+    let creator = this.props.creator;
+    let user_id = this.props.user_id;
+
     return (
-      <div>
+      <div className='individualList'>
         <h3>{this.props.title}</h3>
         <p>Date: {this.props.date}</p>
         <p>Venue: {this.props.venue}</p>
         <p>From: {this.props.startTime} to {this.props.endTime}</p>
-        {this.props.isLoggedIn
-        ? <button className={`creator${this.props.creator}`} onClick={this.props.joinHandler} value={this.props.id}>Join</button>
-        : null
-        }
+        {isLoggedIn && creator != user_id 
+        ? <button className={`joinBtn${this.props.id}`} onClick={this.props.joinHandler} value={this.props.id}>Join</button>
+        : null}
       </div>
     );
   }
@@ -24,20 +29,21 @@ class Activitylist extends Component {
     this.joinHandler = this.joinHandler.bind(this);
     this.state = {
       isLoggedIn: false,
+      joinButton: false,
       username: '',
       user_id: '',
-      activityInfo: []
+      activityInfo: [],
+      rsvpInfo: []
     }
   }
 
   componentDidMount(){
     //console.log('CDM in activityList.js');
-    //console.log(this.props.updateActivity);
     this.getActivity();
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('CWRP in AL', nextProps.updateActivity);
+    // console.log('CWRP in AL', nextProps.updateActivity);
     this.setState({
       isLoggedIn: nextProps.isLoggedIn,
       username: nextProps.username,
@@ -48,9 +54,9 @@ class Activitylist extends Component {
 
   componentDidUpdate(){
     if(this.props.updateActivity){
-      //console.log('CDU in activityList.js');
-      this.getActivity()
-      this.props.stopUpdateActivity()
+      // console.log('CDU in activityList.js');
+      this.props.stopUpdateActivity();
+      setInterval(() => this.getActivity(), 1000);
     };
   }
 
@@ -63,12 +69,13 @@ class Activitylist extends Component {
     .catch((err) => {
       console.log('Error in Joining Activity: ', err.response);
     });
+    document.getElementsByClassName(`joinBtn${e.target.value}`)[0].style.display = 'none';
   }
 
   getActivity(){
+    // console.log('axios get');
     axios.get('http://localhost:5000/activities.json')
     .then((res) => {
-      //console.log('the res from axios is', res.data);
       this.setState({
         activityInfo: res.data.map((obj) => {
           return <List
@@ -81,10 +88,10 @@ class Activitylist extends Component {
             endTime={obj.end_time}
             venue={obj.venue}
             joinHandler={this.joinHandler}
-            isLoggedIn={this.state.isLoggedIn} />;
+            isLoggedIn={this.state.isLoggedIn}
+            user_id={this.state.user_id} />;
         })
       })
-      //console.log('this.state.ai from AL', this.state.activityInfo);
     })
     .catch((err) => {
       console.log('Error in Getting Activities: ', err.response)
@@ -94,8 +101,10 @@ class Activitylist extends Component {
   render(){
     return(
       <div>
-        <h1>Activity Content</h1>
-        {this.state.activityInfo}
+        <h1 className='listHeader'>Play Room</h1>
+        <div className='mainList'>
+          {this.state.activityInfo}
+        </div>
       </div>
     )
   }

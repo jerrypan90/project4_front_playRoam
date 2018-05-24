@@ -13,6 +13,16 @@ import './style.css';
 
 Modal.setAppElement('#root')
 
+class Background extends Component {
+  render() {
+    return (
+      <div className='innerBackgroundDiv'>
+        <img src={this.props.picture} />
+      </div>
+    )
+  }
+}
+
 class App extends Component {
   constructor(){
     super();
@@ -23,12 +33,14 @@ class App extends Component {
     this.handleRegister = this.handleRegister.bind(this);
     this.handleUpdateActivity = this.handleUpdateActivity.bind(this);
     this.stopUpdateActivity = this.stopUpdateActivity.bind(this);
+    this.getBackground = this.getBackground.bind(this);
     this.state = {
       showModal: false,
       isLoggedIn: false,
       updateActivity: false,
       username: '',
-      user_id: ''
+      user_id: '',
+      people: []
     };
   }
 
@@ -41,6 +53,7 @@ class App extends Component {
         user_id: userKey.id
       })
     }
+    this.getBackground();
   }
 
   handleOpenModal() {
@@ -107,19 +120,62 @@ class App extends Component {
     this.setState({ updateActivity: false });
   }
 
+  // getBackground(){
+  //   axios.get('https://randomuser.me/api/?results=200')
+  //   .then((res) => {
+  //     this.setState({ 
+  //       people: res.data.results.map((obj, index) => {
+  //         return <List
+  //           key={index}
+  //           picture={obj.picture.thumbnail} />;
+  //       })
+  //     })   
+  //   })
+  //   .catch((err) => {
+  //       console.log('Error in Getting Background', err.response);
+  //   })    
+  // }
+  getBackground(){
+    axios.get('https://randomuser.me/api/?results=500')
+    .then((res) => {
+      this.setState({ 
+        people: res.data.results
+      })   
+    })
+    .catch((err) => {
+        console.log('Error in Getting Background', err.response);
+    })    
+  }
+
   render() {
     let isLoggedIn = this.state.isLoggedIn;
+    let faceBackground = this.state.people.map((obj, i) => {
+      return <Background
+      key={i}
+      picture={obj.picture.thumbnail}
+      />
+    });
+
     return (
       <div className="App">
         <Router>
-          <div>
+          <div className='routerDiv'>
+            <div className='backgroundDiv'>
+              {faceBackground}
+            </div>
+            <div className='headnav'>
+              <img className='logo' src='http://dribbble.s3.amazonaws.com/users/272547/screenshots/915839/rp.jpg' />
+              <h1 className='playroam'>PlayRoam</h1>
+            </div>
             {isLoggedIn ? (
-              <div>
+              <div className='topnav'>
                 <Activity {...this.state} handleUpdateActivity={this.handleUpdateActivity} />
-                <button onClick={this.handleLogout}>Logout</button>
+                <button className="logout" onClick={this.handleLogout}>Logout</button>
               </div>
             ) : (
-              <button onClick={this.handleOpenModal}>Register/Login</button>
+              <div className='topnav'>
+                <button className="login" onClick={this.handleOpenModal}>Register/Login</button>
+              </div>
             )}
             
             <Modal
@@ -135,9 +191,15 @@ class App extends Component {
               <Signin handleSignIn={this.handleSignIn} />
             </Modal>
 
-            {/* <Route exact path='/activity' component={Activity} /> */}
-            {/* <Activitylist {...this.state} stopUpdateActivity={this.stopUpdateActivity} /> */}
-            <Activitylist isLoggedIn={this.state.isLoggedIn} user_id={this.state.user_id} username={this.state.username} updateActivity={this.state.updateActivity} stopUpdateActivity={this.stopUpdateActivity} />
+            <div className='searchBox'>
+              <input className='inputSearchBox' placeholder='Search for your favourite room..' />
+            </div>
+
+            <div className='activityContent'>
+              {/* <Route exact path='/activity' component={Activity} /> */}
+              <Activitylist {...this.state} stopUpdateActivity={this.stopUpdateActivity} />
+              {/* <Activitylist isLoggedIn={this.state.isLoggedIn} user_id={this.state.user_id} username={this.state.username} updateActivity={this.state.updateActivity} stopUpdateActivity={this.stopUpdateActivity} /> */}
+            </div>
           </div>
         </Router>
       </div>
