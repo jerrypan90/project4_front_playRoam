@@ -196,7 +196,8 @@ class App extends Component {
             </div>
 
             <div className='activityContent'>
-              {/* <Route exact path='/activity' component={Activity} /> */}
+              <Route exact path='/activity' component={Activity} />
+              <Activity />
               <Activitylist {...this.state} stopUpdateActivity={this.stopUpdateActivity} />
               {/* <Activitylist isLoggedIn={this.state.isLoggedIn} user_id={this.state.user_id} username={this.state.username} updateActivity={this.state.updateActivity} stopUpdateActivity={this.stopUpdateActivity} /> */}
             </div>
